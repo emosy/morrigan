@@ -27,6 +27,7 @@
 // Phase detection code
 // Version 1.0
 
+#include "../sst-core/src/sst/core/sst_config.h"
 #include "sst_config.h"
 
 #include "phaseDetector.h"
@@ -39,21 +40,21 @@
 
 // using namespace std;
 using namespace SST;
-using namespace SST::phaseDetector;
+using namespace phaseDetector;
 
 
 //phase detector class defined in phase_detector.h
 
 
 //FIXME: figure out why sig1 and sig2 can't be const
-double PhaseDetector::difference_measure_of_signatures(const bitvec sig1, const bitvec sig2) {
+double phaseDetectorEngine::difference_measure_of_signatures(const bitvec sig1, const bitvec sig2) {
     // auto xor_signatures = sig1 ^ sig2;
     // auto or_signatures = sig1 | sig2;
     return static_cast<double>((sig1 ^ sig2).count()) / (sig1 | sig2).count(); // this should work with any compiler
     // return ((double) xor_signatures.__builtin_count()) / or_signatures.__builtin_count(); // this might only work with GCC
 }
 
-uint64_t PhaseDetector::hash_address(const uint64_t address) {
+uint64_t phaseDetectorEngine::hash_address(const uint64_t address) {
     // auto address_minus_bottom_drop_bits = address >> drop_bits;
     // uint32_t hashed_randomized_address = hash_bitvec(address_minus_bottom_drop_bits); // minstd_rand(address_minus_bottom_drop_bits)(); //hash_bitvec(address_minus_bottom_drop_bits);
     
@@ -68,7 +69,7 @@ uint64_t PhaseDetector::hash_address(const uint64_t address) {
     //not really a hash: hash<uint64_t>()(address_minus_bottom_drop_bits) - time test on big XS: 6.178s
 }
 
-void PhaseDetector::detect(const uint64_t instruction_pointer) {
+void phaseDetectorEngine::detect(const uint64_t instruction_pointer) {
     current_signature[hash_address(instruction_pointer)] = 1;
     
 
@@ -124,7 +125,7 @@ void PhaseDetector::detect(const uint64_t instruction_pointer) {
     instruction_count += 1; // should this be before or after the if?
 }
 
-void PhaseDetector::init_phase_detector() {
+void phaseDetectorEngine::init_phase_detector() {
     current_signature.reset();
     last_signature.reset();
     // hash_bitvec
@@ -136,7 +137,7 @@ void PhaseDetector::init_phase_detector() {
     listeners.clear();
 }
 
-void PhaseDetector::print_log_file(const std::string log_file_name) {
+void phaseDetectorEngine::print_log_file(const std::string log_file_name) {
     
     std::ofstream log(log_file_name);
     // for (auto p : phase_trace) {
@@ -161,7 +162,7 @@ void PhaseDetector::print_log_file(const std::string log_file_name) {
 }
 
 
-void PhaseDetector::cleanup_phase_detector(const std::string log_file_name = "") {
+void phaseDetectorEngine::cleanup_phase_detector(const std::string log_file_name = "") {
 
     if (log_file_name.size() > 0) {
         print_log_file(log_file_name);
@@ -170,6 +171,6 @@ void PhaseDetector::cleanup_phase_detector(const std::string log_file_name = "")
 
 }
 
-void PhaseDetector::register_listeners(const listener_function f) {
+void phaseDetectorEngine::register_listeners(const listener_function f) {
     listeners.push_back(f);
 }
